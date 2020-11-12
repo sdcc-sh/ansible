@@ -2,13 +2,6 @@
 
 - hosts: servers
   tasks:
-    - name: Add SSH public key for ansible user
-      authorized_key:
-        user: ansible
-        # TODO: Replace me
-        key: "{{ lookup('file', 'ansible_id_rsa.pub') }}"
-      become: yes
-
     - name: Configure sudoers rules
       copy:
         src: usr/local/etc/sudoers.d/ansible

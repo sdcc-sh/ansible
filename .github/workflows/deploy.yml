@@ -1,0 +1,31 @@
+---
+name: Deploy
+on:
+  push:
+    branches:
+      - master
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy latest changes to servers
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Deploy
+        run: |
+          eval "$(ssh-agent -s)"
+          ssh-add - <<< "${{ secrets.ANSIBLE_SSH_KEY }}"
+          ansible-playbook -i inventory.ini -u ansible playbook.yml
+        env:
+          ANSIBLE_HOST_KEY_CHECKING: False
