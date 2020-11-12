@@ -1,0 +1,38 @@
+---
+
+- hosts: servers
+  tasks:
+    - name: Add SSH public key for ansible user
+      authorized_key:
+        user: ansible
+        # TODO: Replace me
+        key: "{{ lookup('file', 'ansible_id_rsa.pub') }}"
+      become: yes
+
+    - name: Configure sudoers rules
+      copy:
+        src: usr/local/etc/sudoers.d/ansible
+        dest: /usr/local/etc/sudoers.d/ansible
+        owner: root
+        group: wheel
+        mode: 0444
+        validate: /usr/local/sbin/visudo -csf %s
+      become: yes
+
+    - name: Configure SSH
+      copy:
+        src: etc/ssh/sshd_config
+        dest: /etc/ssh/sshd_config
+        owner: root
+        group: wheel
+        mode: 0644
+        validate: /usr/sbin/sshd -tf %s
+      become: yes
+      notify: Reload SSH
+
+  handlers:
+    - name: Reload SSH
+      service:
+        name: sshd
+        state: reloaded
+      become: yes

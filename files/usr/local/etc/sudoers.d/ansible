@@ -1,0 +1,5 @@
+# Permit passwordless sudo for ansible user
+ansible ALL=(ALL) NOPASSWD: ALL
+
+# Allow members of group wheel to execute any command
+%wheel ALL=(ALL) ALL
