@@ -64,5 +64,5 @@ Unfortunately we cannot log in remotely as `root`, so we will need to manually b
 4. Run initial bootstrapping (this will take a while):
 
     ```
-    ansible-playbook -l <host> -i inventory.ini -u ansible --become-method=su --ask-pass --ask-become-pass main.yml
+    ansible-playbook -l <host> -i inventory.ini -u ansible --become-method=su --ask-pass --ask-become-pass playbook.yml
     ```
