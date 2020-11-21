@@ -1,6 +1,10 @@
 ---
 
 - hosts: all
+  vars_files:
+    - vars/main.yml
+    - vars/vault.yml
+
   tasks:
     - name: Configure sudoers rules
       copy:
@@ -22,6 +26,39 @@
         validate: /usr/sbin/sshd -tf %s
       become: yes
       notify: Reload SSH
+
+    - name: Install Restic
+      package:
+        name: restic
+        state: present
+      become: yes
+
+    - name: Create /root/bin
+      file:
+        path: /root/bin
+        owner: root
+        group: wheel
+        mode: 0770
+        state: directory
+      become: yes
+
+    - name: Copy nightly backup script
+      template:
+        src: root/bin/backup-to-backblaze.j2
+        dest: /root/bin/backup-to-backblaze
+        owner: root
+        group: wheel
+        mode: 0550
+      become: yes
+
+    - name: Configure nightly backup cron job
+      cron:
+        name: restic backup
+        minute: "0"
+        hour: "0"
+        job: /root/bin/backup-to-backblaze
+        state: present
+      become: yes
 
   handlers:
     - name: Reload SSH

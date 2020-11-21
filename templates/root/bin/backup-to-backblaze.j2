@@ -1,0 +1,8 @@
+#!/bin/sh
+
+export B2_ACCOUNT_ID={{ b2_account_id }}
+export B2_ACCOUNT_KEY={{ b2_account_key }}
+export RESTIC_REPOSITORY={{ restic_repository }}
+export RESTIC_PASSWORD={{ restic_password }}
+
+/usr/local/bin/restic backup /usr/home

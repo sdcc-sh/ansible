@@ -26,6 +26,8 @@ jobs:
         run: |
           eval "$(ssh-agent -s)"
           ssh-add - <<< "${{ secrets.ANSIBLE_SSH_KEY }}"
+          echo "${{ secrets.ANSIBLE_VAULT_PASSWORD }}" > .vault_pass.txt
           ansible-playbook -i hosts -u ansible site.yml
         env:
           ANSIBLE_HOST_KEY_CHECKING: False
+          ANSIBLE_VAULT_PASSWORD_FILE: .vault_pass.txt
