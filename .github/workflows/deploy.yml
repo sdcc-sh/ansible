@@ -26,6 +26,6 @@ jobs:
         run: |
           eval "$(ssh-agent -s)"
           ssh-add - <<< "${{ secrets.ANSIBLE_SSH_KEY }}"
-          ansible-playbook -i inventory.ini -u ansible playbook.yml
+          ansible-playbook -i hosts -u ansible site.yml
         env:
           ANSIBLE_HOST_KEY_CHECKING: False

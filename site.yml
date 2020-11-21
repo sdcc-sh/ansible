@@ -1,6 +1,6 @@
 ---
 
-- hosts: servers
+- hosts: all
   tasks:
     - name: Configure sudoers rules
       copy:

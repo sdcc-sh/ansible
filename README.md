@@ -10,7 +10,7 @@ You will need `sshpass` installed (brew install hudochenkov/sshpass)
 python3 -m venv env
 source env/bin/activate
 pip install -r requirements.txt
-ansible-playbook -i inventory.ini playbook.yml --check
+ansible-playbook site.yml --check
 ```
 
 ## Development
@@ -57,7 +57,7 @@ ansible-lint
 
 Unfortunately we cannot log in remotely as `root`, so we will need to manually bootstrap the box to get it ready for Ansible.
 
-1. Add entry for host in `inventory.ini`
+1. Add entry for host in `hosts`
 
 2. Install pre-requisite packages:
 
@@ -72,5 +72,5 @@ Unfortunately we cannot log in remotely as `root`, so we will need to manually b
 4. Run initial bootstrapping (this will take a while):
 
     ```
-    ansible-playbook -l <host> -i inventory.ini -u ansible --become-method=su --ask-pass --ask-become-pass playbook.yml
+    ansible-playbook -u ansible --become-method=su --ask-pass --ask-become-pass site.yml
     ```
