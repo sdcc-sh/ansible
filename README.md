@@ -13,6 +13,14 @@ pip install -r requirements.txt
 ansible-playbook -i inventory.ini playbook.yml --check
 ```
 
+## Development
+
+Before raising a pull request you should run a lint check against your changes:
+
+```
+ansible-lint
+```
+
 ## Provisioning a New Server
 
 ### OS Installation
