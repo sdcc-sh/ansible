@@ -60,9 +60,133 @@
         state: present
       become: yes
 
+    - name: Configure rc.d
+      copy:
+        src: etc/rc.conf
+        dest: /etc/rc.conf
+        owner: root
+        group: wheel
+        mode: 0644
+        # TODO: Add rc.conf validation
+        #validate:
+      become: yes
+      notify: Reload services
+
+    - name: Create /usr/jail/www
+      file:
+        path: /usr/jail/www
+        owner: root
+        group: wheel
+        mode: 0755
+        state: directory
+      become: yes
+
+    - name: Install gtar (needed for unarchive)
+      package:
+        name: gtar
+        state: present
+      become: yes
+
+    # TODO: This is insanely slow - debug disk IO
+    - name: Download FreeBSD dist for www jail
+      unarchive:
+        src: ftp://ftp.freebsd.org/pub/FreeBSD/releases/amd64/{{ ansible_kernel }}/base.txz
+        dest: /usr/jail/www
+        remote_src: yes
+      become: yes
+
+    - name: Configure jails
+      template:
+        src: etc/jail.conf
+        dest: /etc/jail.conf
+        owner: root
+        group: wheel
+        mode: 0644
+      become: yes
+      notify: Restart jails
+
+    # TODO: This doesn't seem to work reliably (#13)
+    - name: Start jails
+      service:
+        name: jail
+        state: started
+      become: yes
+
+    - name: Install nginx in www jail
+      package:
+        name: nginx
+        jail: www
+        state: present
+      become: yes
+
+    - name: Configure rc.d (www jail)
+      copy:
+        src: usr/jail/www/etc/rc.conf
+        dest: /usr/jail/www/etc/rc.conf
+        owner: root
+        group: wheel
+        mode: 0644
+      become: yes
+      notify: Reload nginx
+
+    - name: Start nginx
+      service:
+        name: nginx
+        options: -j www
+        state: started
+      become: yes
+
+    - name: Create /usr/jail/www/usr/local/www/sdcc.sh
+      file:
+        path: /usr/jail/www/usr/local/www/sdcc.sh
+        owner: root
+        group: wheel
+        mode: 0755
+        state: directory
+      become: yes
+
+    - name: Create index.html
+      copy:
+        content: Hello, world!
+        dest: /usr/jail/www/usr/local/www/sdcc.sh/index.html
+        owner: root
+        group: wheel
+        mode: 0644
+      become: yes
+
+    - name: Configure nginx
+      copy:
+        src: usr/jail/www/usr/local/etc/nginx/nginx.conf
+        dest: /usr/jail/www/usr/local/etc/nginx/nginx.conf
+        owner: root
+        group: wheel
+        mode: 0644
+        # TODO: Figure out how to validate files inside the jail (#15)
+        #validate: /usr/sbin/jexec www /usr/local/sbin/nginx -t -c %s
+      become: yes
+      notify: Reload nginx
+
   handlers:
+    - name: Reload services
+      command: service -R
+      become: yes
+
     - name: Reload SSH
       service:
         name: sshd
+        state: reloaded
+      become: yes
+
+    # TODO: This doesn't seem to work reliably (#13)
+    - name: Restart jails
+      service:
+        name: jail
+        state: restarted
+      become: yes
+
+    - name: Reload nginx
+      service:
+        name: nginx
+        options: -j www
         state: reloaded
       become: yes
