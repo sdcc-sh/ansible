@@ -25,7 +25,7 @@
         mode: 0644
         validate: /usr/sbin/sshd -tf %s
       become: yes
-      notify: Reload SSH
+      notify: Restart SSH
 
     - name: Install Restic
       package:
@@ -171,10 +171,10 @@
       command: service -R
       become: yes
 
-    - name: Reload SSH
+    - name: Restart SSH
       service:
         name: sshd
-        state: reloaded
+        state: restarted
       become: yes
 
     # TODO: This doesn't seem to work reliably (#13)
