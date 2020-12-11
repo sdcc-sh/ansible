@@ -112,11 +112,11 @@
       become: yes
       notify: Restart jails
 
-    # TODO: This doesn't seem to work reliably (#13)
+    # TODO: Replace this with service module (#13)
+    #       This command is idemppotent, but it does clutter up the
+    #       playbook summary somewhat.
     - name: Start jails
-      service:
-        name: jail
-        state: started
+      command: service jail start
       become: yes
 
     - name: Install nginx in www jail
