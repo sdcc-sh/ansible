@@ -96,6 +96,12 @@
         remote_src: yes
       become: yes
 
+    - name: Configure /etc/resolv.conf for www jail
+      template:
+        src: etc/resolv.conf
+        dest: /usr/jail/www/etc/resolv.conf
+      become: yes
+
     - name: Configure jails
       template:
         src: etc/jail.conf
