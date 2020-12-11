@@ -61,7 +61,7 @@
       become: yes
 
     - name: Configure rc.d
-      copy:
+      template:
         src: etc/rc.conf
         dest: /etc/rc.conf
         owner: root
