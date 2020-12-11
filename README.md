@@ -4,13 +4,13 @@ A collection of Ansible-related config for managing [sdcc.sh](https://sdcc.sh) s
 
 ## Quickstart
 
-You will need `sshpass` installed (brew install hudochenkov/sshpass)
+You will need `sshpass` installed (`brew install hudochenkov/sshpass/sshpass`)
 
 ```
-python3 -m venv env
-source env/bin/activate
-pip install -r requirements.txt
-ansible-playbook site.yml --check
+$ python3 -m venv env
+$ source env/bin/activate
+$ pip install -r requirements.txt
+$ ansible-playbook --ask-vault-pass site.yml --check
 ```
 
 ## Development
@@ -18,22 +18,18 @@ ansible-playbook site.yml --check
 Before raising a pull request you should run a lint check against your changes:
 
 ```
-ansible-lint
+$ ansible-lint
 ```
 
 ## Provisioning a New Server
 
 ### OS Installation
 
-1. Order a new VPS with the desired config
-
-2. Mount the `FreeBSD-11.2-bootonly` image 
-
-3. Use the remote console to run through installation using the following settings:
+1. Use the remote console to run through installation using the following settings:
 
     | Setting                                           | Value                                                                                                                                                 |
     |---------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
-    | Hostname                                          | `vps<id>.sdcc.sh`                                                                                                                                     |
+    | Hostname                                          | `<mac>.sdcc.sh`                                                                                                                                       |
     | Distribution Select                               | `ports`                                                                                                                                               |
     | Partitioning                                      | Auto (ZFS)                                                                                                                                            |
     | ZFS Configuration - Encrypt Disks?                | YES                                                                                                                                                   |
@@ -49,9 +45,9 @@ ansible-lint
     | Add Users - Invite `ansible` into other groups?   | `wheel`                                                                                                                                               |
     | Add Users - Use a random password                 | `yes`                                                                                                                                                 |
 
-4. Finalise the installation and reboot the machine. Don't forget to unmount the image before rebooting.
+2. Finalise the installation and reboot the machine. Don't forget to unmount the image before rebooting.
 
-5. Use the remote console to enter the disk decryption password (you will need to do this each time the server is rebooted).
+3. Use the remote console to enter the disk decryption password (you will need to do this each time the server is rebooted).
 
 ### Bootstrapping
 
@@ -62,15 +58,16 @@ Unfortunately we cannot log in remotely as `root`, so we will need to manually b
 2. Install pre-requisite packages:
 
     ```
-    ssh ansible@<hostname>
-    su -u
-    pkg install sudo python3
+    $ ssh ansible@<hostname>
+    # pkg install sudo python3
     ```
 
-3. Disconnect
+3. Copy across SSH public key for ansible user
 
-4. Run initial bootstrapping (this will take a while):
+4. Disconnect
+
+5. Run initial bootstrapping (this will take a while):
 
     ```
-    ansible-playbook -u ansible --become-method=su --ask-pass --ask-become-pass site.yml
+    $ ansible-playbook -u ansible --become-method=su --ask-pass --ask-become-pass --ask-vault-pass site.yml
     ```
