@@ -119,6 +119,12 @@
       command: service jail start
       become: yes
 
+    - name: Bootstrap pkg in www jail
+      command: pkg bootstrap
+      environment:
+        ASSUME_ALWAYS_YES: YES
+      become: yes
+
     - name: Install nginx in www jail
       package:
         name: nginx
