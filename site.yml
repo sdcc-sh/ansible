@@ -87,10 +87,11 @@
         state: present
       become: yes
 
-    # TODO: This is insanely slow - debug disk IO
+    # TODO: This is always run - find a better way to create
+    #       jails (#20)
     - name: Download FreeBSD dist for www jail
       unarchive:
-        src: ftp://ftp.freebsd.org/pub/FreeBSD/releases/amd64/{{ ansible_kernel }}/base.txz
+        src: ftp://ftp.freebsd.org/pub/FreeBSD/releases/amd64/{{ ansible_distribution_version }}-RELEASE/base.txz
         dest: /usr/jail/www
         remote_src: yes
       become: yes
