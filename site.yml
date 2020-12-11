@@ -149,9 +149,9 @@
         state: started
       become: yes
 
-    - name: Create /usr/jail/www/usr/local/www/sdcc.sh
+    - name: Create /usr/jail/www/usr/local/www/www.sdcc.sh
       file:
-        path: /usr/jail/www/usr/local/www/sdcc.sh
+        path: /usr/jail/www/usr/local/www/www.sdcc.sh
         owner: root
         group: wheel
         mode: 0755
@@ -161,7 +161,7 @@
     - name: Create index.html
       copy:
         content: Hello, world!
-        dest: /usr/jail/www/usr/local/www/sdcc.sh/index.html
+        dest: /usr/jail/www/usr/local/www/www.sdcc.sh/index.html
         owner: root
         group: wheel
         mode: 0644
