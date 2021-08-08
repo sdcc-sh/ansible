@@ -10,7 +10,7 @@ You will need `sshpass` installed (`brew install hudochenkov/sshpass/sshpass`)
 $ python3 -m venv env
 $ source env/bin/activate
 $ pip install -r requirements.txt
-$ ansible-playbook --ask-vault-pass site.yml --check
+$ ansible-playbook --private-key <keyfile> -u ansible --ask-become-pass --ask-vault-pass site.yml
 ```
 
 ## Development
