@@ -72,86 +72,21 @@
       become: yes
       notify: Reload services
 
-    - name: Create /usr/jail/www
-      file:
-        path: /usr/jail/www
-        owner: root
-        group: wheel
-        mode: 0755
-        state: directory
-      become: yes
-
-    - name: Install gtar (needed for unarchive)
-      package:
-        name: gtar
-        state: present
-      become: yes
-
-    # TODO: This is always run - find a better way to create
-    #       jails (#20)
-    - name: Download FreeBSD dist for www jail
-      unarchive:
-        src: ftp://ftp.freebsd.org/pub/FreeBSD/releases/amd64/{{ ansible_distribution_version }}-RELEASE/base.txz
-        dest: /usr/jail/www
-        remote_src: yes
-      become: yes
-
-    - name: Configure /etc/resolv.conf for www jail
-      template:
-        src: etc/resolv.conf
-        dest: /usr/jail/www/etc/resolv.conf
-      become: yes
-
-    - name: Configure jails
-      template:
-        src: etc/jail.conf
-        dest: /etc/jail.conf
-        owner: root
-        group: wheel
-        mode: 0644
-      become: yes
-      notify: Restart jails
-
-    # TODO: Replace this with service module (#13)
-    #       This command is idemppotent, but it does clutter up the
-    #       playbook summary somewhat.
-    - name: Start jails
-      command: service jail start
-      become: yes
-
-    - name: Bootstrap pkg in www jail
-      command: pkg bootstrap
-      environment:
-        ASSUME_ALWAYS_YES: YES
-      become: yes
-
-    - name: Install nginx in www jail
+    - name: Install nginx
       package:
         name: nginx
-        jail: www
         state: present
       become: yes
-
-    - name: Configure rc.d (www jail)
-      copy:
-        src: usr/jail/www/etc/rc.conf
-        dest: /usr/jail/www/etc/rc.conf
-        owner: root
-        group: wheel
-        mode: 0644
-      become: yes
-      notify: Reload nginx
 
     - name: Start nginx
       service:
         name: nginx
-        options: -j www
         state: started
       become: yes
 
-    - name: Create /usr/jail/www/usr/local/www/www.sdcc.sh
+    - name: Create /usr/local/www/www.sdcc.sh
       file:
-        path: /usr/jail/www/usr/local/www/www.sdcc.sh
+        path: /usr/local/www/www.sdcc.sh
         owner: root
         group: wheel
         mode: 0755
@@ -161,7 +96,7 @@
     - name: Create index.html
       copy:
         content: Hello, world!
-        dest: /usr/jail/www/usr/local/www/www.sdcc.sh/index.html
+        dest: /usr/local/www/www.sdcc.sh/index.html
         owner: root
         group: wheel
         mode: 0644
@@ -169,13 +104,12 @@
 
     - name: Configure nginx
       copy:
-        src: usr/jail/www/usr/local/etc/nginx/nginx.conf
-        dest: /usr/jail/www/usr/local/etc/nginx/nginx.conf
+        src: usr/local/etc/nginx/nginx.conf
+        dest: /usr/local/etc/nginx/nginx.conf
         owner: root
         group: wheel
         mode: 0644
-        # TODO: Figure out how to validate files inside the jail (#15)
-        #validate: /usr/sbin/jexec www /usr/local/sbin/nginx -t -c %s
+        validate: /usr/local/sbin/nginx -t -c %s
       become: yes
       notify: Reload nginx
 
@@ -190,16 +124,8 @@
         state: restarted
       become: yes
 
-    # TODO: This doesn't seem to work reliably (#13)
-    - name: Restart jails
-      service:
-        name: jail
-        state: restarted
-      become: yes
-
     - name: Reload nginx
       service:
         name: nginx
-        options: -j www
         state: reloaded
       become: yes

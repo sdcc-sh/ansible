@@ -1,5 +1,4 @@
 ansible==2.10.3
-ansible-base @ git+https://github.com/mikeanthonywild/ansible.git@10c5eea7e3fd0f0c2d58e21839d777d1be37020c
 ansible-lint==4.3.7
 cffi==1.14.4
 colorama==0.4.4
