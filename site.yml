@@ -27,6 +27,15 @@
       become: yes
       notify: Restart SSH
 
+    - name: Create /srv directory
+      file:
+        path: /srv
+        owner: root
+        group: wheel
+        mode: 0755
+        state: directory
+      become: yes
+
     - name: Install Restic
       package:
         name: restic
@@ -113,6 +122,52 @@
       become: yes
       notify: Reload nginx
 
+    - name: Install navidrome
+      package:
+        name: navidrome
+        state: present
+      become: yes
+
+    - name: Start navidrome
+      service:
+        name: navidrome
+        state: started
+      become: yes
+
+    - name: Create music-rw user group
+      group:
+        name: music-rw
+        state: present
+      become: yes
+
+    - name: Create /srv/subsonic directory
+      file:
+        path: /srv/subsonic
+        owner: root
+        group: wheel
+        mode: 0755
+        state: directory
+      become: yes
+
+    - name: Create music directory
+      file:
+        path: /srv/subsonic/music
+        owner: root
+        group: music-rw
+        mode: 0775
+        state: directory
+      become: yes
+
+    - name: Configure navidrome
+      copy:
+        src: usr/local/etc/navidrome/config.toml
+        dest: /usr/local/etc/navidrome/config.toml
+        owner: root
+        group: wheel
+        mode: 0644
+      become: yes
+      notify: Restart navidrome
+
   handlers:
     - name: Reload services
       command: service -R
@@ -128,4 +183,10 @@
       service:
         name: nginx
         state: reloaded
+      become: yes
+
+    - name: Restart navidrome
+      service:
+        name: navidrome
+        state: restarted
       become: yes
