@@ -27,6 +27,15 @@
       become: yes
       notify: Restart SSH
 
+    - name: Configure motd
+      copy:
+        src: etc/motd
+        dest: /etc/motd
+        owner: root
+        group: wheel
+        mode: 0644
+      become: yes
+
     - name: Create /srv directory
       file:
         path: /srv
@@ -104,8 +113,21 @@
 
     - name: Create index.html
       copy:
-        content: Hello, world!
+        content: Hello, world! <a href="https://www.sdcc.sh/services.txt">Available services</a>.
         dest: /usr/local/www/www.sdcc.sh/index.html
+        owner: root
+        group: wheel
+        mode: 0644
+      become: yes
+
+    - name: Create services.txt
+      copy:
+        content: |
+          # SERVICE     PORT/PROTOCOL URL                         DESCRIPTION
+          ssh           22/tcp        # ssh://sdcc.sh             SSH Remote Login Protocol
+          www           443/tcp       # https://www.sdcc.sh       This website
+          subsonic      443/tcp       # https://subsonic.sdcc.sh  Subsonic-compatible Music streaming server
+        dest: /usr/local/www/www.sdcc.sh/services.txt
         owner: root
         group: wheel
         mode: 0644
