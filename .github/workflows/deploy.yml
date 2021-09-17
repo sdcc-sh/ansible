@@ -6,6 +6,7 @@ on:
       - master
 jobs:
   deploy:
+    environment: prod
     runs-on: ubuntu-latest
     name: Deploy latest changes to servers
     steps:
