@@ -127,6 +127,9 @@
           ssh           22/tcp        # ssh://sdcc.sh             SSH Remote Login Protocol
           www           443/tcp       # https://www.sdcc.sh       This website
           subsonic      443/tcp       # https://subsonic.sdcc.sh  Subsonic-compatible Music streaming server
+          bittorrent    6881/udp      #                           rTorrent BitTorrent client DHT
+          bittorrent    50000/udp     #                           rTorrent BitTorrent client
+          bittorrent    50000/tdp     #                           rTorrent BitTorrent client
         dest: /usr/local/www/www.sdcc.sh/services.txt
         owner: root
         group: wheel
@@ -190,6 +193,117 @@
       become: yes
       notify: Restart navidrome
 
+    - name: Install rtorrent
+      package:
+        name: rtorrent
+        state: present
+      become: yes
+
+    - name: Install rtorrent rc.d script
+      copy:
+        src: usr/local/etc/rc.d/rtorrent
+        dest: /usr/local/etc/rc.d/rtorrent
+        owner: root
+        group: wheel
+        mode: 0755
+      become: yes
+
+    - name: Start rtorrent
+      service:
+        name: rtorrent
+        state: started
+      become: yes
+
+    - name: Create torrents-rw user group
+      group:
+        name: torrents-rw
+        state: present
+      become: yes
+
+    - name: Create rtorrent user
+      user:
+        name: rtorrent
+        groups: [torrents-rw]
+        password: "*"
+        shell: /usr/sbin/nologin
+        append: yes
+        create_home: no
+        state: present
+      become: yes
+
+    - name: Create /var/log/rtorrent directory
+      file:
+        path: /var/log/rtorrent
+        owner: root
+        group: rtorrent
+        mode: 0775
+        state: directory
+      become: yes
+
+    - name: Create /var/run/rtorrent directory
+      file:
+        path: /var/run/rtorrent
+        owner: root
+        group: rtorrent
+        mode: 0775
+        state: directory
+      become: yes
+
+    - name: Create /srv/bittorrent directory
+      file:
+        path: /srv/bittorrent
+        owner: root
+        group: wheel
+        mode: 0755
+        state: directory
+      become: yes
+
+    - name: Create /srv/bittorrent/torrents/load directory
+      file:
+        path: /srv/bittorrent/torrents/load
+        owner: root
+        group: torrents-rw
+        mode: 0775
+        state: directory
+      become: yes
+
+    - name: Create /srv/bittorrent/torrents/start directory
+      file:
+        path: /srv/bittorrent/torrents/start
+        owner: root
+        group: torrents-rw
+        mode: 0775
+        state: directory
+      become: yes
+
+    - name: Create /srv/bittorrent/downloads directory
+      file:
+        path: /srv/bittorrent/downloads
+        owner: root
+        group: torrents-rw
+        mode: 0775
+        state: directory
+      become: yes
+
+    - name: Create /usr/local/etc/rtorrent directory
+      file:
+        path: /usr/local/etc/rtorrent
+        owner: root
+        group: wheel
+        mode: 0755
+        state: directory
+      become: yes
+
+    - name: Configure rtorrent
+      copy:
+        src: usr/local/etc/rtorrent/rtorrent.rc
+        dest: /usr/local/etc/rtorrent/rtorrent.rc
+        owner: root
+        group: wheel
+        mode: 0644
+      become: yes
+      notify: Restart rtorrent
+
   handlers:
     - name: Reload services
       command: service -R
@@ -210,5 +324,12 @@
     - name: Restart navidrome
       service:
         name: navidrome
+        state: restarted
+      become: yes
+
+    - name: Restart rtorrent
+      service:
+        name: rtorrent
+        # No reload option
         state: restarted
       become: yes
