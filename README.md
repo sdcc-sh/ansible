@@ -1,5 +1,7 @@
 # SDCC Ansible
 
+[![Deploy](https://github.com/sdcc-sh/sdcc-ansible/actions/workflows/deploy.yml/badge.svg)](https://github.com/sdcc-sh/sdcc-ansible/actions/workflows/deploy.yml)
+
 A collection of Ansible-related config for managing [sdcc.sh](https://sdcc.sh) servers.
 
 ## Quickstart
@@ -10,7 +12,7 @@ You will need `sshpass` installed (`brew install hudochenkov/sshpass/sshpass`)
 $ python3 -m venv env
 $ source env/bin/activate
 $ pip install -r requirements.txt
-$ ansible-playbook --private-key <keyfile> -u ansible --ask-become-pass --ask-vault-pass site.yml
+$ ansible-playbook --ask-become-pass --ask-vault-pass site.yml
 ```
 
 ## Development
@@ -53,7 +55,7 @@ $ ansible-lint
 
 Unfortunately we cannot log in remotely as `root`, so we will need to manually bootstrap the box to get it ready for Ansible.
 
-1. Add entry for host in `hosts`
+1. Add inventory entry for host in `hosts`
 
 2. Install pre-requisite packages:
 
