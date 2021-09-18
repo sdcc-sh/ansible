@@ -349,4 +349,7 @@
       command: |
         kldload pf
         pfctl -F all -f /etc/pf.conf
+        # TODO: Do we want to defer this? Most likely it will
+        # kill the SSH connection before Ansible disconnects.
+        pfctl -e
       become: yes
