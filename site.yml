@@ -304,6 +304,17 @@
       become: yes
       notify: Restart rtorrent
 
+    - name: Configure pf
+      copy:
+        src: etc/pf.conf
+        dest: /etc/pf.conf
+        owner: root
+        group: wheel
+        mode: 0644
+        validate: pfctl -vnf %s
+      become: yes
+      notify: Reload pf
+
   handlers:
     - name: Reload services
       command: service -R
@@ -332,4 +343,10 @@
         name: rtorrent
         # No reload option
         state: restarted
+      become: yes
+
+    - name: Reload pf
+      command: |
+        kldload pf
+        pfctl -F all -f /etc/pf.conf
       become: yes
