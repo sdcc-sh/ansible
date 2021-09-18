@@ -208,12 +208,6 @@
         mode: 0755
       become: yes
 
-    - name: Start rtorrent
-      service:
-        name: rtorrent
-        state: started
-      become: yes
-
     - name: Create torrents-rw user group
       group:
         name: torrents-rw
@@ -247,6 +241,12 @@
         group: rtorrent
         mode: 0775
         state: directory
+      become: yes
+
+    - name: Start rtorrent
+      service:
+        name: rtorrent
+        state: started
       become: yes
 
     - name: Create /srv/bittorrent directory
