@@ -315,6 +315,13 @@
       become: yes
       notify: Reload pf
 
+    - name: Install rsync
+      package:
+        name: rsync
+        state: present
+      become: yes
+
+
   handlers:
     - name: Reload services
       command: service -R
