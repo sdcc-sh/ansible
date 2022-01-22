@@ -2,7 +2,7 @@
 
 [![Deploy](https://github.com/sdcc-sh/sdcc-ansible/actions/workflows/deploy.yml/badge.svg)](https://github.com/sdcc-sh/sdcc-ansible/actions/workflows/deploy.yml)
 
-A collection of Ansible-related config for managing [sdcc.sh](https://sdcc.sh) servers.
+A collection of Ansible-related config for managing [sdcc.dev](https://sdcc.dev) servers.
 
 ## Quickstart
 
@@ -31,7 +31,7 @@ $ ansible-lint
 
     | Setting                                           | Value                                                                                                                                                 |
     |---------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
-    | Hostname                                          | `<mac>.sdcc.sh`                                                                                                                                       |
+    | Hostname                                          | `<mac>.sdcc.dev`                                                                                                                                       |
     | Distribution Select                               | `ports`                                                                                                                                               |
     | Partitioning                                      | Auto (ZFS)                                                                                                                                            |
     | ZFS Configuration - Encrypt Disks?                | YES                                                                                                                                                   |
