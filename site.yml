@@ -127,9 +127,9 @@
           ssh           22/tcp        # ssh://sdcc.dev            SSH Remote Login Protocol
           www           443/tcp       # https://www.sdcc.dev      This website
           subsonic      443/tcp       # https://subsonic.sdcc.dev Subsonic-compatible Music streaming server
-          bittorrent    6881/udp      #                           rTorrent BitTorrent client DHT
-          bittorrent    50000/udp     #                           rTorrent BitTorrent client
-          bittorrent    50000/tdp     #                           rTorrent BitTorrent client
+          bittorrent    6881/udp      #                           Transmission BitTorrent client (DHT)
+          bittorrent    51413/udp     #                           Transmission BitTorrent client
+          bittorrent    51413/tdp     #                           Transmission BitTorrent client
         dest: /usr/local/www/www.sdcc.dev/services.txt
         owner: root
         group: wheel
@@ -193,19 +193,10 @@
       become: yes
       notify: Restart navidrome
 
-    - name: Install rtorrent
+    - name: Install transmission
       package:
-        name: rtorrent
+        name: [transmission-daemon, transmission-utils]
         state: present
-      become: yes
-
-    - name: Install rtorrent rc.d script
-      copy:
-        src: usr/local/etc/rc.d/rtorrent
-        dest: /usr/local/etc/rc.d/rtorrent
-        owner: root
-        group: wheel
-        mode: 0755
       become: yes
 
     - name: Create torrents-rw user group
@@ -214,38 +205,17 @@
         state: present
       become: yes
 
-    - name: Create rtorrent user
+    - name: Add transmission user to torrents-rw
       user:
-        name: rtorrent
+        name: transmission
         groups: [torrents-rw]
-        password: "*"
-        shell: /usr/sbin/nologin
         append: yes
-        create_home: no
         state: present
       become: yes
 
-    - name: Create /var/log/rtorrent directory
-      file:
-        path: /var/log/rtorrent
-        owner: root
-        group: rtorrent
-        mode: 0775
-        state: directory
-      become: yes
-
-    - name: Create /var/run/rtorrent directory
-      file:
-        path: /var/run/rtorrent
-        owner: root
-        group: rtorrent
-        mode: 0775
-        state: directory
-      become: yes
-
-    - name: Start rtorrent
+    - name: Start transmission
       service:
-        name: rtorrent
+        name: transmission
         state: started
       become: yes
 
@@ -258,24 +228,6 @@
         state: directory
       become: yes
 
-    - name: Create /srv/bittorrent/torrents/load directory
-      file:
-        path: /srv/bittorrent/torrents/load
-        owner: root
-        group: torrents-rw
-        mode: 0775
-        state: directory
-      become: yes
-
-    - name: Create /srv/bittorrent/torrents/start directory
-      file:
-        path: /srv/bittorrent/torrents/start
-        owner: root
-        group: torrents-rw
-        mode: 0775
-        state: directory
-      become: yes
-
     - name: Create /srv/bittorrent/downloads directory
       file:
         path: /srv/bittorrent/downloads
@@ -284,25 +236,6 @@
         mode: 0775
         state: directory
       become: yes
-
-    - name: Create /usr/local/etc/rtorrent directory
-      file:
-        path: /usr/local/etc/rtorrent
-        owner: root
-        group: wheel
-        mode: 0755
-        state: directory
-      become: yes
-
-    - name: Configure rtorrent
-      copy:
-        src: usr/local/etc/rtorrent/rtorrent.rc
-        dest: /usr/local/etc/rtorrent/rtorrent.rc
-        owner: root
-        group: wheel
-        mode: 0644
-      become: yes
-      notify: Restart rtorrent
 
     - name: Configure pf
       copy:
@@ -351,9 +284,9 @@
         state: restarted
       become: yes
 
-    - name: Restart rtorrent
+    - name: Restart transmission
       service:
-        name: rtorrent
+        name: transmission
         # No reload option
         state: restarted
       become: yes
