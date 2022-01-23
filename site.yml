@@ -321,6 +321,12 @@
         state: present
       become: yes
 
+    - name: Install tmux
+      package:
+        name: tmux
+        state: present
+      become: yes
+
 
   handlers:
     - name: Reload services
